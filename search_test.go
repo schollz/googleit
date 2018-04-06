@@ -17,3 +17,9 @@ func TestDuckDuckGo(t *testing.T) {
 	assert.Nil(t, err)
 	assert.True(t, len(urls) > 100 && len(urls) < 300)
 }
+
+func TestBoth(t *testing.T) {
+	urls, err := Search("cats")
+	assert.Nil(t, err)
+	assert.True(t, len(urls) > 400)
+}
