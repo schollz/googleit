@@ -9,8 +9,12 @@ func ListToSet(s []string) []string {
 	u := make([]string, len(m))
 	i := 0
 	for t := range m {
+		if len(t) == 0 {
+			continue
+		}
 		u[i] = t
 		i++
 	}
+	u = u[:i]
 	return u
 }
