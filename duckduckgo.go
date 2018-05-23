@@ -9,10 +9,18 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func DuckDuckGo(query string) (urls []string, err error) {
+func DuckDuckGo(query string, numPages ...int) (urls []string, err error) {
+	pageLimit := 20
+	if len(numPages) > 0 {
+		pageLimit = numPages[0]
+	}
+	if pageLimit < 1 {
+		pageLimit = 20
+	}
+
 	urls = []string{}
 	nextParameters := fmt.Sprintf(`q=%s&b=&kl=us-en`, url.QueryEscape(query))
-	for i := 0; i < 20; i++ {
+	for i := 0; i < pageLimit; i++ {
 		body := strings.NewReader(nextParameters)
 		req, errReq := http.NewRequest("POST", "https://duckduckgo.com/html/", body)
 		if errReq != nil {

@@ -1,6 +1,6 @@
 package googleit
 
-func Search(query string) (urls []string, err error) {
+func Search(query string, numpages ...int) (urls []string, err error) {
 	type Job struct {
 		service string
 		query   string
@@ -12,21 +12,25 @@ func Search(query string) (urls []string, err error) {
 	jobs := make(chan Job, 2)
 	results := make(chan Result, 2)
 
+	pageLimit := -1
+	if len(numpages) > 0 {
+		pageLimit = numpages[0]
+	}
 	workers := 2
 	for w := 1; w <= workers; w++ {
-		go func(id int, jobs <-chan Job, results chan<- Result) {
+		go func(id int, jobs <-chan Job, results chan<- Result, pageLimit int) {
 			// generate sha256 filename
 			for j := range jobs {
 				var r Result
 				if j.service == "duck" {
-					r.urls, r.err = DuckDuckGo(j.query)
+					r.urls, r.err = DuckDuckGo(j.query, pageLimit)
 				} else {
-					r.urls, r.err = Bing(j.query)
+					r.urls, r.err = Bing(j.query, pageLimit)
 				}
 				results <- r
 			}
 
-		}(w, jobs, results)
+		}(w, jobs, results, pageLimit)
 	}
 
 	jobs <- Job{

@@ -9,10 +9,18 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func Bing(query string) (urls []string, err error) {
+func Bing(query string, numPages ...int) (urls []string, err error) {
+	pageLimit := 10
+	if len(numPages) > 0 {
+		pageLimit = numPages[0]
+	}
+	if pageLimit < 1 {
+		pageLimit = 10
+	}
+
 	currentCount := 2
 	urls = []string{}
-	for i := 0; i < 10; i++ {
+	for i := 0; i < pageLimit; i++ {
 		req, err2 := http.NewRequest("GET", fmt.Sprintf("https://www.bing.com/search?q=%s&count=50&first=%d", url.QueryEscape(query), currentCount), nil)
 		if err2 != nil {
 			err = err2
