@@ -18,7 +18,7 @@ func Bing(query string, numPages ...int) (urls []string, err error) {
 		pageLimit = 10
 	}
 
-	currentCount := 2
+	currentCount := 1
 	urls = []string{}
 	for i := 0; i < pageLimit; i++ {
 		req, err2 := http.NewRequest("GET", fmt.Sprintf("https://www.bing.com/search?q=%s&count=50&first=%d", url.QueryEscape(query), currentCount), nil)

@@ -102,7 +102,6 @@ func captureDuckDuckGo(res *http.Response) (urls []string, nextParameters string
 			return
 		}
 		urls = append(urls, href)
-		// fmt.Printf("%d) %s\n", i, href)
 	})
 
 	return

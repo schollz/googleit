@@ -7,15 +7,17 @@ import (
 )
 
 func TestBing(t *testing.T) {
-	urls, err := Bing("cats")
+	urls, err := Bing("cat animal wiki")
 	assert.Nil(t, err)
 	assert.True(t, len(urls) > 100)
+	assert.Equal(t, "https://en.wikipedia.org/wiki/Cat", urls[0])
 }
 
 func TestDuckDuckGo(t *testing.T) {
-	urls, err := DuckDuckGo("cats")
+	urls, err := DuckDuckGo("cat animal wiki")
 	assert.Nil(t, err)
 	assert.True(t, len(urls) > 100 && len(urls) < 300)
+	assert.Equal(t, "https://en.wikipedia.org/wiki/Cat", urls[0])
 }
 
 func TestBoth(t *testing.T) {

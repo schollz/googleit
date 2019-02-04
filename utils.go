@@ -1,20 +1,22 @@
 package googleit
 
 // ListToSet convers a list to a set (removing duplicates)
-func ListToSet(s []string) []string {
+// but preserving order
+func ListToSet(s []string) (t []string) {
 	m := make(map[string]struct{})
-	for _, t := range s {
-		m[t] = struct{}{}
-	}
-	u := make([]string, len(m))
+	t = make([]string, len(s))
 	i := 0
-	for t := range m {
-		if len(t) == 0 {
+	for _, v := range s {
+		if _, ok := m[v]; ok {
 			continue
 		}
-		u[i] = t
+		m[v] = struct{}{}
+		t[i] = v
 		i++
 	}
-	u = u[:i]
-	return u
+	if i == 0 {
+		return []string{}
+	}
+	t = t[:i]
+	return
 }
