@@ -1,7 +1,7 @@
 
 # googleit
 
-<img src="https://img.shields.io/badge/coverage-83%25-brightgreen.svg?style=flat-square" alt="Code coverage">&nbsp;<a href="https://travis-ci.org/schollz/googleit"><img src="https://img.shields.io/travis/schollz/googleit.svg?style=flat-square" alt="Build Status"></a> 
+<img src="https://img.shields.io/badge/coverage-83%25-brightgreen.svg?style=flat-square" alt="Code coverage">&nbsp;<a href="https://travis-ci.org/schollz/googleit"><img src="https://img.shields.io/travis/schollz/googleit.svg?style=flat-square" alt="Build Status"></a>&nbsp;<a href="https://godoc.org/github.com/schollz/googleit"><img src="http://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square" alt="Go Doc"></a> 
 
 ## Install
 
