@@ -1,4 +1,4 @@
-module github.com/schollz/googleit
+module github.com/schollz/googleit/v2
 
 require (
 	github.com/PuerkitoBio/goquery v1.5.0
