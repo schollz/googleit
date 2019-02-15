@@ -5,6 +5,8 @@ type Options struct {
 	UseTor   bool
 }
 
+var httpClient *HTTPClient
+
 func Search(query string, ops ...Options) (urls []string, err error) {
 	type Job struct {
 		service string
@@ -16,6 +18,17 @@ func Search(query string, ops ...Options) (urls []string, err error) {
 	}
 	jobs := make(chan Job, 2)
 	results := make(chan Result, 2)
+
+	if httpClient == nil {
+		if len(ops) > 0 {
+			httpClient, err = GetClient(ops[0].UseTor)
+		} else {
+			httpClient, err = GetClient(false)
+		}
+		if err != nil {
+			return
+		}
+	}
 
 	workers := 2
 	for w := 1; w <= workers; w++ {

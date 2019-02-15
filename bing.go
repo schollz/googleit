@@ -10,20 +10,20 @@ import (
 )
 
 func Bing(query string, ops ...Options) (urls []string, err error) {
-	httpclient, err := GetClient(false)
-	if err != nil {
-		return
+	if httpClient == nil {
+		if len(ops) > 0 {
+			httpClient, err = GetClient(ops[0].UseTor)
+		} else {
+			httpClient, err = GetClient(false)
+		}
+		if err != nil {
+			return
+		}
 	}
 
 	pageLimit := 10
 	if len(ops) > 0 {
 		pageLimit = ops[0].NumPages
-		if ops[0].UseTor {
-			httpclient, err = GetClient(true)
-			if err != nil {
-				return
-			}
-		}
 	}
 	if pageLimit < 1 {
 		pageLimit = 10
@@ -45,7 +45,7 @@ func Bing(query string, ops ...Options) (urls []string, err error) {
 		req.Header.Set("Referer", "https://www.bing.com/")
 		req.Header.Set("Authority", "www.bing.com")
 
-		resp, err2 := httpclient.Client.Do(req)
+		resp, err2 := httpClient.Client.Do(req)
 		if err2 != nil {
 			err = err2
 			return

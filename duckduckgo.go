@@ -10,20 +10,20 @@ import (
 )
 
 func DuckDuckGo(query string, ops ...Options) (urls []string, err error) {
-	httpclient, err := GetClient(false)
-	if err != nil {
-		return
+	if httpClient == nil {
+		if len(ops) > 0 {
+			httpClient, err = GetClient(ops[0].UseTor)
+		} else {
+			httpClient, err = GetClient(false)
+		}
+		if err != nil {
+			return
+		}
 	}
 
 	pageLimit := 10
 	if len(ops) > 0 {
 		pageLimit = ops[0].NumPages
-		if ops[0].UseTor {
-			httpclient, err = GetClient(true)
-			if err != nil {
-				return
-			}
-		}
 	}
 
 	urls = []string{}
@@ -46,7 +46,7 @@ func DuckDuckGo(query string, ops ...Options) (urls []string, err error) {
 		req.Header.Set("Referer", "https://duckduckgo.com/")
 		req.Header.Set("Dnt", "1")
 
-		resp, err2 := httpclient.Client.Do(req)
+		resp, err2 := httpClient.Client.Do(req)
 		if err2 != nil {
 			err = err2
 			return
