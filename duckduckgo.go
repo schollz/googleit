@@ -9,13 +9,21 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func DuckDuckGo(query string, numPages ...int) (urls []string, err error) {
-	pageLimit := 20
-	if len(numPages) > 0 {
-		pageLimit = numPages[0]
+func DuckDuckGo(query string, ops ...Options) (urls []string, err error) {
+	httpclient, err := GetClient(false)
+	if err != nil {
+		return
 	}
-	if pageLimit < 1 {
-		pageLimit = 20
+
+	pageLimit := 10
+	if len(ops) > 0 {
+		pageLimit = ops[0].NumPages
+		if ops[0].UseTor {
+			httpclient, err = GetClient(true)
+			if err != nil {
+				return
+			}
+		}
 	}
 
 	urls = []string{}
@@ -38,7 +46,7 @@ func DuckDuckGo(query string, numPages ...int) (urls []string, err error) {
 		req.Header.Set("Referer", "https://duckduckgo.com/")
 		req.Header.Set("Dnt", "1")
 
-		resp, err2 := http.DefaultClient.Do(req)
+		resp, err2 := httpclient.Client.Do(req)
 		if err2 != nil {
 			err = err2
 			return
