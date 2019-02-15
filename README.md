@@ -13,9 +13,7 @@ go get github.com/schollz/googleit
 
 
 ```golang
-searchTerm := "cats wiki"
-numPages := 1
-urls, _ := googleit.Search(searchTerm, numPages)
+urls, _ := googleit.Search("cats wiki")
 fmt.Println(urls[0])
 // https://en.wikipedia.org/wiki/Cat
 ```
