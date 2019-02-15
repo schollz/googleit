@@ -9,5 +9,5 @@ require (
 	github.com/stretchr/objx v0.1.1
 	github.com/stretchr/testify v1.3.0
 	golang.org/x/crypto v0.0.0-20190211182817-74369b46fc67 // indirect
-	golang.org/x/net v0.0.0-20190125091013-d26f9f9a57f3
+	golang.org/x/net v0.0.0-20190213061140-3a22650c66bd
 )
