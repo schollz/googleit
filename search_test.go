@@ -24,7 +24,7 @@ func TestSearchDuckDuckGo(t *testing.T) {
 func TestSearchBoth(t *testing.T) {
 	urls, err := Search("cat animal wiki")
 	assert.Nil(t, err)
-	assert.True(t, len(urls) > 400)
+	assert.True(t, len(urls) > 10)
 	assert.Equal(t, "https://en.wikipedia.org/wiki/Cat", urls[0])
 }
 
