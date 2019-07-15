@@ -7,6 +7,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestSearchStartPage(t *testing.T) {
+	urls, err := StartPage("von williebrand factor")
+	assert.Nil(t, err)
+	assert.True(t, len(urls) > 100)
+	// assert.Equal(t, "https://en.wikipedia.org/wiki/Cat", urls[0])
+}
+
 func TestSearchBing(t *testing.T) {
 	urls, err := Bing("cat animal wiki")
 	assert.Nil(t, err)
