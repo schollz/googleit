@@ -111,7 +111,7 @@ func captureStartPage(res *http.Response) (urls []string, code string, err error
 			return
 		}
 		urls = append(urls, href)
-		log.Trace(href)
+		log.Tracef("[startpage] %s", href)
 	})
 
 	doc.Find("input#sc").Each(func(i int, s *goquery.Selection) {

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	log "github.com/schollz/logger"
 )
 
 func Bing(query string, ops ...Options) (urls []string, err error) {
@@ -90,6 +91,7 @@ func captureBing(res *http.Response) (urls []string, err error) {
 			return
 		}
 		urls = append(urls, href)
+		log.Tracef("[bing] %s", href)
 		// fmt.Printf("%d) %s\n", i, href)
 	})
 

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	log "github.com/schollz/logger"
 )
 
 func DuckDuckGo(query string, ops ...Options) (urls []string, err error) {
@@ -109,6 +110,7 @@ func captureDuckDuckGo(res *http.Response) (urls []string, nextParameters string
 		if !strings.Contains(href, "http") || strings.Contains(href, "duckduckgo") || strings.Contains(href, "duck.co") {
 			return
 		}
+		log.Tracef("[duck] %s", href)
 		urls = append(urls, href)
 	})
 
