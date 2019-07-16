@@ -41,3 +41,10 @@ func TestSearchBingWithTor(t *testing.T) {
 	assert.Nil(t, err)
 	assert.True(t, len(urls) >= 9)
 }
+
+// func TestGo(t *testing.T) {
+// 	log.SetLevel("trace")
+// 	urls, err := Search("ingredients chocolate chip cookie recipe", Options{NumPages: 60})
+// 	assert.Nil(t, err)
+// 	ioutil.WriteFile("urls6.txt", []byte(strings.Join(urls, "\n")), 0644)
+// }
