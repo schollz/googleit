@@ -60,7 +60,7 @@ func Bing(query string, ops ...Options) (urls []string, err error) {
 			break
 		}
 		urls = append(urls, newURLs...)
-		currentCount += 50
+		currentCount += len(newURLs)
 	}
 
 	urls = ListToSet(urls)
