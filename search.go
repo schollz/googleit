@@ -9,8 +9,14 @@ func init() {
 }
 
 type Options struct {
-	NumPages int
-	UseTor   bool
+	NumPages    int
+	UseTor      bool
+	MustInclude []string
+}
+
+type Result struct {
+	Title string
+	URL   string
 }
 
 var httpClient *HTTPClient

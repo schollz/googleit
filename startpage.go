@@ -23,8 +23,10 @@ func StartPage(query string, ops ...Options) (urls []string, err error) {
 	}
 
 	pageLimit := 10
+	mustInclude := []string{}
 	if len(ops) > 0 {
 		pageLimit = ops[0].NumPages
+		mustInclude = ops[0].MustInclude
 	}
 	if pageLimit < 1 {
 		pageLimit = 10
@@ -71,24 +73,36 @@ func StartPage(query string, ops ...Options) (urls []string, err error) {
 			err = err2
 			return
 		}
-		var newURLs []string
-		newURLs, code, err2 = captureStartPage(resp)
+		var newResults []Result
+		newResults, code, err2 = captureStartPage(resp)
 		if err2 != nil {
 			err = err2
 			return
 		}
-		if len(newURLs) == 0 {
+		if len(newResults) == 0 {
 			break
 		}
-		urls = append(urls, newURLs...)
-		currentCount += len(newURLs)
+		for _, r := range newResults {
+			doesntHave := ""
+			for _, word := range mustInclude {
+				if !strings.Contains(r.Title, word) {
+					doesntHave = word
+					break
+				}
+			}
+			if doesntHave != "" {
+				log.Tracef("[startpage] skipping '%s' as it doesn't have '%s'", r.Title, doesntHave)
+			}
+			urls = append(urls, r.URL)
+			currentCount++
+		}
 	}
 
 	urls = ListToSet(urls)
 	return
 }
 
-func captureStartPage(res *http.Response) (urls []string, code string, err error) {
+func captureStartPage(res *http.Response) (results []Result, code string, err error) {
 	defer res.Body.Close()
 	// Load the HTML document
 	doc, err := goquery.NewDocumentFromReader(res.Body)
@@ -97,7 +111,7 @@ func captureStartPage(res *http.Response) (urls []string, code string, err error
 	}
 
 	// Find the urls
-	urls = []string{}
+	results = []Result{}
 	doc.Find(".w-gl__result-title").Each(func(i int, s *goquery.Selection) {
 		href, ok := s.Attr("href")
 		if !ok {
@@ -110,8 +124,8 @@ func captureStartPage(res *http.Response) (urls []string, code string, err error
 		if !strings.Contains(href, "http") || strings.Contains(href, "bing") || strings.Contains(href, "bing.co") || strings.Contains(href, "clickserve") {
 			return
 		}
-		urls = append(urls, href)
-		log.Tracef("[startpage] %s", href)
+		results = append(results, Result{strings.ToLower(s.Text()), href})
+		log.Tracef("[startpage] '%s' %s", strings.ToLower(s.Text()), href)
 	})
 
 	doc.Find("input#sc").Each(func(i int, s *goquery.Selection) {

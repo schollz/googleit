@@ -1,6 +1,8 @@
 package googleit
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	log "github.com/schollz/logger"
@@ -9,9 +11,10 @@ import (
 
 func TestSearchStartPage(t *testing.T) {
 	log.SetLevel("trace")
-	urls, err := StartPage("cat", Options{NumPages: 30})
+	urls, err := StartPage("banana chocolate chip cookie recipe", Options{NumPages: 30, MustInclude: []string{"banana", "chocolate", "chip", "cookie"}})
 	assert.Nil(t, err)
 	assert.True(t, len(urls) > 100)
+	fmt.Println(strings.Join(urls, "\n"))
 }
 
 func TestSearchBing(t *testing.T) {
