@@ -1,7 +1,9 @@
 package googleit
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -23,17 +25,22 @@ func DuckDuckGo(query string, ops ...Options) (urls []string, err error) {
 	}
 
 	pageLimit := 10
+	mustInclude := []string{}
 	if len(ops) > 0 {
 		pageLimit = ops[0].NumPages
+		mustInclude = ops[0].MustInclude
 	}
 
+	currentCount := 1
 	urls = []string{}
 	nextParameters := fmt.Sprintf(`q=%s&b=&kl=us-en`, url.QueryEscape(query))
 	for i := 0; i < pageLimit; i++ {
+		log.Debugf("getting %s", nextParameters)
 		body := strings.NewReader(nextParameters)
 		req, errReq := http.NewRequest("POST", "https://duckduckgo.com/html/", body)
 		if errReq != nil {
 			err = errReq
+			log.Errorf("[duck] %s", err)
 			return
 		}
 		req.Header.Set("Origin", "https://duckduckgo.com")
@@ -50,29 +57,53 @@ func DuckDuckGo(query string, ops ...Options) (urls []string, err error) {
 		resp, err2 := httpClient.Client.Do(req)
 		if err2 != nil {
 			err = err2
+			log.Errorf("[duck] %s", err)
 			return
 		}
 		if resp.StatusCode != 200 {
-			err = fmt.Errorf("status code error: %d %s", resp.StatusCode, resp.Status)
+			err = fmt.Errorf("[duck] status code error: %d %s", resp.StatusCode, resp.Status)
+			log.Errorf("[duck] %s", err)
 			return
 		}
-		var urls2 []string
-		urls2, nextParameters, err2 = captureDuckDuckGo(resp)
+
+		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+		resp.Body.Close()
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+
+		var newResults []Result
+		newResults, nextParameters, err2 = captureDuckDuckGo(resp)
 		if err2 != nil {
 			err = err2
+			log.Errorf("[duck] %s", err)
 			return
 		}
-		if len(urls2) == 0 {
+		if len(newResults) == 0 {
+			log.Tracef("[duck] no new results: %s", bodyBytes)
 			break
 		}
-		urls = append(urls, urls2...)
+		for _, r := range newResults {
+			doesntHave := ""
+			for _, word := range mustInclude {
+				if !strings.Contains(r.Title, word) && !strings.Contains(r.URL, word) {
+					doesntHave = word
+					break
+				}
+			}
+			if doesntHave != "" {
+				log.Tracef("[duck] skipping '%s' as it doesn't have '%s'", r.Title, doesntHave)
+				continue
+			}
+			urls = append(urls, r.URL)
+			currentCount++
+		}
+		log.Tracef("[duck] finished page %d/%d", i, pageLimit)
 	}
 
 	urls = ListToSet(urls)
 	return
 }
 
-func captureDuckDuckGo(res *http.Response) (urls []string, nextParameters string, err error) {
+func captureDuckDuckGo(res *http.Response) (results []Result, nextParameters string, err error) {
 	defer res.Body.Close()
 	// Load the HTML document
 	doc, err := goquery.NewDocumentFromReader(res.Body)
@@ -97,7 +128,7 @@ func captureDuckDuckGo(res *http.Response) (urls []string, nextParameters string
 	nextParameters = strings.Join(parameters, "&")
 
 	// Find the urls
-	urls = []string{}
+	results = []Result{}
 	doc.Find("h2 > a").Each(func(i int, s *goquery.Selection) {
 		href, ok := s.Attr("href")
 		if !ok {
@@ -111,8 +142,10 @@ func captureDuckDuckGo(res *http.Response) (urls []string, nextParameters string
 			return
 		}
 		log.Tracef("[duck] %s", href)
-		urls = append(urls, href)
+		results = append(results, Result{
+			URL:   href,
+			Title: strings.ToLower(strings.TrimSpace(s.Text())),
+		})
 	})
-
 	return
 }

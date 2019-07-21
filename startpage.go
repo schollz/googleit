@@ -85,13 +85,14 @@ func StartPage(query string, ops ...Options) (urls []string, err error) {
 		for _, r := range newResults {
 			doesntHave := ""
 			for _, word := range mustInclude {
-				if !strings.Contains(r.Title, word) {
+				if !strings.Contains(r.Title, word) && !strings.Contains(r.URL, word) {
 					doesntHave = word
 					break
 				}
 			}
 			if doesntHave != "" {
 				log.Tracef("[startpage] skipping '%s' as it doesn't have '%s'", r.Title, doesntHave)
+				continue
 			}
 			urls = append(urls, r.URL)
 			currentCount++

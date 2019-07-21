@@ -2,6 +2,7 @@ package googleit
 
 import (
 	"fmt"
+	"io/ioutil"
 	"strings"
 	"testing"
 
@@ -13,27 +14,29 @@ func TestSearchStartPage(t *testing.T) {
 	log.SetLevel("trace")
 	urls, err := StartPage("banana chocolate chip cookie recipe", Options{NumPages: 30, MustInclude: []string{"banana", "chocolate", "chip", "cookie"}})
 	assert.Nil(t, err)
-	assert.True(t, len(urls) > 100)
+	assert.True(t, len(urls) > 10)
 	fmt.Println(strings.Join(urls, "\n"))
 }
 
 func TestSearchBing(t *testing.T) {
 	log.SetLevel("trace")
-	urls, err := Bing("cat animal wiki")
+	urls, err := Bing("banana chocolate chip cookie recipe", Options{NumPages: 30, MustInclude: []string{"banana", "chocolate", "chip", "cookie"}})
 	assert.Nil(t, err)
 	assert.True(t, len(urls) > 100)
+	fmt.Println(strings.Join(urls, "\n"))
 }
 
 func TestSearchDuckDuckGo(t *testing.T) {
 	log.SetLevel("trace")
-	urls, err := DuckDuckGo("cat animal wiki")
+	urls, err := DuckDuckGo("banana chocolate chip cookie recipe", Options{NumPages: 30, MustInclude: []string{"banana", "chocolate", "chip", "cookie"}})
 	assert.Nil(t, err)
 	assert.True(t, len(urls) > 100 && len(urls) < 300)
+	fmt.Println(strings.Join(urls, "\n"))
 }
 
 func TestSearchBoth(t *testing.T) {
 	log.SetLevel("trace")
-	urls, err := Search("cat animal wiki")
+	urls, err := Search("banana chocolate chip cookie recipe", Options{NumPages: 30, MustInclude: []string{"banana", "chocolate", "chip", "cookie"}})
 	assert.Nil(t, err)
 	assert.True(t, len(urls) > 10)
 }
@@ -45,9 +48,9 @@ func TestSearchBingWithTor(t *testing.T) {
 	assert.True(t, len(urls) >= 9)
 }
 
-// func TestGo(t *testing.T) {
-// 	log.SetLevel("trace")
-// 	urls, err := Search("ingredients chocolate chip cookie recipe", Options{NumPages: 60})
-// 	assert.Nil(t, err)
-// 	ioutil.WriteFile("urls6.txt", []byte(strings.Join(urls, "\n")), 0644)
-// }
+func TestGo(t *testing.T) {
+	log.SetLevel("trace")
+	urls, err := Search("banana chocolate chip cookie recipe", Options{NumPages: 30, MustInclude: []string{"banana", "chocolate", "chip", "cookie"}})
+	assert.Nil(t, err)
+	ioutil.WriteFile("urls.txt", []byte(strings.Join(urls, "\n")), 0644)
+}

@@ -23,8 +23,10 @@ func Bing(query string, ops ...Options) (urls []string, err error) {
 	}
 
 	pageLimit := 10
+	mustInclude := []string{}
 	if len(ops) > 0 {
 		pageLimit = ops[0].NumPages
+		mustInclude = ops[0].MustInclude
 	}
 	if pageLimit < 1 {
 		pageLimit = 10
@@ -51,24 +53,39 @@ func Bing(query string, ops ...Options) (urls []string, err error) {
 			err = err2
 			return
 		}
-		var newURLs []string
-		newURLs, err2 = captureBing(resp)
+
+		var newResults []Result
+		newResults, err2 = captureBing(resp)
 		if err2 != nil {
 			err = err2
 			return
 		}
-		if len(newURLs) == 0 {
+		if len(newResults) == 0 {
 			break
 		}
-		urls = append(urls, newURLs...)
-		currentCount += len(newURLs)
+		for _, r := range newResults {
+			doesntHave := ""
+			for _, word := range mustInclude {
+				if !strings.Contains(r.Title, word) && !strings.Contains(r.URL, word) {
+					doesntHave = word
+					break
+				}
+			}
+			if doesntHave != "" {
+				log.Tracef("[bing] skipping '%s' as it doesn't have '%s'", r.Title, doesntHave)
+				continue
+			}
+			urls = append(urls, r.URL)
+			currentCount++
+		}
+		log.Tracef("[bing] finished page %d", i)
 	}
 
 	urls = ListToSet(urls)
 	return
 }
 
-func captureBing(res *http.Response) (urls []string, err error) {
+func captureBing(res *http.Response) (results []Result, err error) {
 	defer res.Body.Close()
 	// Load the HTML document
 	doc, err := goquery.NewDocumentFromReader(res.Body)
@@ -77,7 +94,7 @@ func captureBing(res *http.Response) (urls []string, err error) {
 	}
 
 	// Find the urls
-	urls = []string{}
+	results = []Result{}
 	doc.Find("h2 > a").Each(func(i int, s *goquery.Selection) {
 		href, ok := s.Attr("href")
 		if !ok {
@@ -90,9 +107,12 @@ func captureBing(res *http.Response) (urls []string, err error) {
 		if !strings.Contains(href, "http") || strings.Contains(href, "bing") || strings.Contains(href, "bing.co") || strings.Contains(href, "clickserve") {
 			return
 		}
-		urls = append(urls, href)
+		results = append(results, Result{URL: href})
 		log.Tracef("[bing] %s", href)
-		// fmt.Printf("%d) %s\n", i, href)
+		results = append(results, Result{
+			URL:   href,
+			Title: strings.ToLower(strings.TrimSpace(s.Text())),
+		})
 	})
 
 	return
