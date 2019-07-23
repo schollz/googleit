@@ -50,7 +50,7 @@ func TestSearchBingWithTor(t *testing.T) {
 
 func TestGo(t *testing.T) {
 	log.SetLevel("trace")
-	urls, err := Search("banana chocolate chip cookie recipe", Options{NumPages: 30, MustInclude: []string{"banana", "chocolate", "chip", "cookie"}})
+	urls, err := Search("banana chocolate chip cookie recipe", Options{Site: "www.allrecipes.com", NumPages: 30, MustInclude: []string{"banana", "chocolate", "chip", "cookie"}})
 	assert.Nil(t, err)
 	ioutil.WriteFile("urls.txt", []byte(strings.Join(urls, "\n")), 0644)
 }

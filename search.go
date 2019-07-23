@@ -9,6 +9,7 @@ func init() {
 }
 
 type Options struct {
+	Site        string
 	NumPages    int
 	UseTor      bool
 	MustInclude []string

@@ -27,6 +27,9 @@ func Bing(query string, ops ...Options) (urls []string, err error) {
 	if len(ops) > 0 {
 		pageLimit = ops[0].NumPages
 		mustInclude = ops[0].MustInclude
+		if ops[0].Site != "" {
+			query = "site:" + ops[0].Site + " " + query
+		}
 	}
 	if pageLimit < 1 {
 		pageLimit = 10
