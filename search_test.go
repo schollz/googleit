@@ -40,12 +40,12 @@ func TestSearchBoth(t *testing.T) {
 	assert.True(t, len(urls) > 10)
 }
 
-func TestSearchBingWithTor(t *testing.T) {
-	log.SetLevel("trace")
-	urls, err := Bing("cat animal wiki", Options{NumPages: 1, UseTor: true})
-	assert.Nil(t, err)
-	assert.True(t, len(urls) >= 9)
-}
+// func TestSearchBingWithTor(t *testing.T) {
+// 	log.SetLevel("trace")
+// 	urls, err := Bing("cat animal wiki", Options{NumPages: 1, UseTor: true})
+// 	assert.Nil(t, err)
+// 	assert.True(t, len(urls) >= 9)
+// }
 
 // func TestGo(t *testing.T) {
 // 	log.SetLevel("trace")
