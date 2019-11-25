@@ -1,6 +1,9 @@
 package googleit
 
 import (
+	"fmt"
+	"sort"
+
 	log "github.com/schollz/logger"
 )
 
@@ -78,14 +81,53 @@ func Search(query string, ops ...Options) (urls []string, err error) {
 	}
 	close(jobs)
 
-	urls = []string{}
+	urlsRanking := make(map[string][]float64)
 	for i := 0; i < 3; i++ {
 		r := <-results
 		if r.err != nil {
 			err = r.err
 		}
-		urls = append(urls, r.urls...)
+		for i, u := range r.urls {
+			if _, ok := urlsRanking[u]; !ok {
+				urlsRanking[u] = []float64{}
+			}
+			urlsRanking[u] = append(urlsRanking[u], float64(i))
+		}
 	}
-	urls = ListToSet(urls)
+	if len(urlsRanking) == 0 {
+		if err != nil {
+			return
+		}
+		err = fmt.Errorf("no results")
+		return
+	}
+
+	type kv struct {
+		Key   string
+		Value float64
+	}
+
+	var ss []kv
+	for k := range urlsRanking {
+		v := 0.0
+		for _, vv := range urlsRanking[k] {
+			v += vv
+		}
+		v = v / float64(len(urlsRanking[k]))
+		ss = append(ss, kv{k, v})
+	}
+
+	sort.Slice(ss, func(i, j int) bool {
+		return ss[i].Value < ss[j].Value
+	})
+
+	urls = make([]string, len(ss))
+	for i, kv := range ss {
+		urls[i] = kv.Key
+	}
+
+	if len(urls) > 0 {
+		err = nil
+	}
 	return
 }

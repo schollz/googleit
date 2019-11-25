@@ -40,6 +40,13 @@ func TestSearchBoth(t *testing.T) {
 	assert.True(t, len(urls) > 10)
 }
 
+func TestSearchRanking(t *testing.T) {
+	log.SetLevel("trace")
+	urls, err := Search("site:tabs.ultimate-guitar.com mr.magic amy winehouse", Options{NumPages: 1, Site: "tabs.ultimate-guitar.com"})
+	assert.Nil(t, err)
+	assert.True(t, len(urls) > 10)
+}
+
 // func TestSearchBingWithTor(t *testing.T) {
 // 	log.SetLevel("trace")
 // 	urls, err := Bing("cat animal wiki", Options{NumPages: 1, UseTor: true})

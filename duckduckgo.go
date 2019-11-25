@@ -38,7 +38,7 @@ func DuckDuckGo(query string, ops ...Options) (urls []string, err error) {
 	urls = []string{}
 	nextParameters := fmt.Sprintf(`q=%s&b=&kl=us-en`, url.QueryEscape(query))
 	for i := 0; i < pageLimit; i++ {
-		log.Debugf("getting %s", nextParameters)
+		log.Tracef("getting %s", nextParameters)
 		body := strings.NewReader(nextParameters)
 		req, errReq := http.NewRequest("POST", "https://duckduckgo.com/html/", body)
 		if errReq != nil {
