@@ -128,12 +128,13 @@ func captureStartPage(res *http.Response) (results []Result, code string, err er
 		if !strings.Contains(href, "http") || strings.Contains(href, "bing") || strings.Contains(href, "bing.co") || strings.Contains(href, "clickserve") {
 			return
 		}
-		results = append(results, Result{strings.ToLower(s.Text()), href})
-		log.Tracef("[startpage] '%s' %s", strings.ToLower(s.Text()), href)
+		title := strings.TrimSpace(strings.ToLower(s.Text()))
+		results = append(results, Result{title, href})
+		log.Tracef("[startpage] '%s' %s", title, href)
 	})
 
-	doc.Find("input#sc").Each(func(i int, s *goquery.Selection) {
-		id := s.AttrOr("id", "")
+	doc.Find("input[name='sc']").Each(func(i int, s *goquery.Selection) {
+		id := s.AttrOr("name", "")
 		if id == "sc" {
 			code, _ = s.Attr("value")
 		}
