@@ -68,6 +68,9 @@ func Bing(query string, ops ...Options) (urls []string, err error) {
 		}
 		for _, r := range newResults {
 			doesntHave := ""
+			if strings.Contains(r.URL, "go.microsoft.com") {
+				continue
+			}
 			for _, word := range mustInclude {
 				if !strings.Contains(r.Title, word) && !strings.Contains(r.URL, word) {
 					doesntHave = word

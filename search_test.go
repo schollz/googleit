@@ -29,7 +29,7 @@ func TestSearchDuckDuckGo(t *testing.T) {
 	log.SetLevel("trace")
 	urls, err := DuckDuckGo("banana chocolate chip cookie recipe", Options{NumPages: 30, MustInclude: []string{"banana", "chocolate", "chip", "cookie"}})
 	assert.Nil(t, err)
-	assert.True(t, len(urls) > 100 && len(urls) < 300)
+	assert.True(t, len(urls) > 30)
 	fmt.Println(strings.Join(urls, "\n"))
 }
 
@@ -46,7 +46,7 @@ func TestSearchRanking(t *testing.T) {
 	urls, err := Search("site:tabs.ultimate-guitar.com mr.magic amy winehouse", Options{NumPages: 1, Site: "tabs.ultimate-guitar.com"})
 	assert.Nil(t, err)
 	assert.True(t, len(urls) > 10)
-	assert.Equal(t, "https://tabs.ultimate-guitar.com/tab/amy_winehouse/mr_magic_chords_1828391", urls[0])
+	assert.Equal(t, "https://tabs.ultimate-guitar.com/tab/amy-winehouse/mr-magic-chords-640059", urls[0])
 }
 
 // func TestSearchBingWithTor(t *testing.T) {
