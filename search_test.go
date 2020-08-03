@@ -38,6 +38,7 @@ func TestSearchBoth(t *testing.T) {
 	urls, err := Search("banana chocolate chip cookie recipe", Options{NumPages: 30, MustInclude: []string{"banana", "chocolate", "chip", "cookie"}})
 	assert.Nil(t, err)
 	assert.True(t, len(urls) > 10)
+	fmt.Println(urls)
 }
 
 func TestSearchRanking(t *testing.T) {
