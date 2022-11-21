@@ -9,6 +9,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestDuck2(t *testing.T) {
+	client, err := GetClient(false)
+	assert.Nil(t, err)
+
+	next, err := duckDuckGoSearch(client, DuckSearch{Q: "chocolate chip cookies"})
+	assert.Nil(t, err)
+	assert.NotEmpty(t, next.Results)
+	next, err = duckDuckGoSearch(client, DuckSearch{Q: "chocolate chip cookies"})
+	assert.Nil(t, err)
+	assert.NotEmpty(t, next.Results)
+}
+
 func TestSearchStartPage(t *testing.T) {
 	log.SetLevel("trace")
 	urls, err := StartPage("banana chocolate chip cookie recipe", Options{NumPages: 30, MustInclude: []string{"banana", "chocolate", "chip", "cookie"}})
@@ -27,7 +39,7 @@ func TestSearchBing(t *testing.T) {
 
 func TestSearchDuckDuckGo(t *testing.T) {
 	log.SetLevel("trace")
-	urls, err := DuckDuckGo("banana chocolate chip cookie recipe", Options{NumPages: 30, MustInclude: []string{"banana", "chocolate", "chip", "cookie"}})
+	urls, err := DuckDuckGo("banana chocolate chip cookie recipe", Options{NumPages: 10, MustInclude: []string{"chocolate", "chip", "cookie"}})
 	assert.Nil(t, err)
 	assert.True(t, len(urls) > 30)
 	fmt.Println(strings.Join(urls, "\n"))
@@ -39,6 +51,7 @@ func TestSearchBoth(t *testing.T) {
 	assert.Nil(t, err)
 	assert.True(t, len(urls) > 10)
 	fmt.Println(urls)
+	fmt.Printf("found %d urls.", len(urls))
 }
 
 func TestSearchRanking(t *testing.T) {

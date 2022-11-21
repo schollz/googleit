@@ -113,7 +113,7 @@ func captureBing(res *http.Response) (results []Result, err error) {
 		if !strings.Contains(href, "http") || strings.Contains(href, "bing") || strings.Contains(href, "bing.co") || strings.Contains(href, "clickserve") {
 			return
 		}
-		results = append(results, Result{URL: href})
+		log.Tracef("[bing] %s", strings.TrimSpace(s.Text()))
 		log.Tracef("[bing] %s", href)
 		results = append(results, Result{
 			URL:   href,

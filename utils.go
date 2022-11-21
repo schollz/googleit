@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/cretz/bine/tor"
+	log "github.com/schollz/logger"
 )
 
 // ListToSet convers a list to a set (removing duplicates)
@@ -38,6 +39,10 @@ func (h *HTTPClient) Get(url string) (resp *http.Response, err error) {
 	return h.Client.Get(url)
 }
 
+func (h *HTTPClient) Do(req *http.Request) (resp *http.Response, err error) {
+	return h.Client.Do(req)
+}
+
 func (h *HTTPClient) Close() (err error) {
 	if h.torconnection != nil {
 		err = h.torconnection.Close()
@@ -57,18 +62,23 @@ func GetClient(useTor bool) (httpClient *HTTPClient, err error) {
 		return
 	}
 
+	log.Trace("starting tor")
 	httpClient.torconnection, err = tor.Start(nil, nil)
 	if err != nil {
+		log.Error(err)
 		return
 	}
 
 	dialCtx, dialCancel := context.WithTimeout(context.Background(), 3000*time.Hour)
 	defer dialCancel()
 	// Make connection
+	log.Trace("dialing tor...")
 	dialer, err := httpClient.torconnection.Dialer(dialCtx, nil)
 	if err != nil {
+		log.Error(err)
 		return
 	}
+	log.Trace("making transport...")
 	httpClient.Client.Transport = &http.Transport{
 		DialContext:         dialer.DialContext,
 		MaxIdleConnsPerHost: 20,
