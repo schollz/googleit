@@ -72,7 +72,8 @@ func Bing(query string, ops ...Options) (urls []string, err error) {
 				continue
 			}
 			for _, word := range mustInclude {
-				if !strings.Contains(r.Title, word) && !strings.Contains(r.URL, word) {
+				word = strings.ToLower(word)
+				if !strings.Contains(strings.ToLower(r.Title), word) && !strings.Contains(strings.ToLower(r.URL), word) {
 					doesntHave = word
 					break
 				}
